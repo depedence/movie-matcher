@@ -1,4 +1,4 @@
-backend/gradle
+backend/.gradle
 backend/.idea
 backend/src/main/resources/application.yml
 backend/build
