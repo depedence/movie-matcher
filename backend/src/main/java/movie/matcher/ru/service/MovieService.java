@@ -15,7 +15,6 @@ import java.util.List;
 public class MovieService {
 
     private final OmdbClient omdbClient;
-
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public List<MovieDto> getFeed() {
