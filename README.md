@@ -97,5 +97,3 @@ spring:
 https://www.omdbapi.com/apikey.aspx
 
 ---
-
-MIT
