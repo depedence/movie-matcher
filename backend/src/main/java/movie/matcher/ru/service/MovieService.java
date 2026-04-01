@@ -20,7 +20,7 @@ public class MovieService {
     public List<MovieDto> getFeed() {
         List<MovieDto> feed = new ArrayList<>();
 
-        String keyword = "star";
+        String keyword = randomKeyword();
         String json = omdbClient.searchMovies(keyword, 1);
 
         try {
@@ -29,6 +29,11 @@ public class MovieService {
 
             if (searchResults.isArray()) {
                 for (JsonNode node : searchResults) {
+
+                    if (feed.size() >= 10) {
+                        break;
+                    }
+
                     MovieDto dto = new MovieDto();
 
                     dto.setTitle(node.path("Title").asString());
@@ -54,6 +59,12 @@ public class MovieService {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    private String randomKeyword() {
+        String alphabet = "abcdefghijklmnopqrstuvwxyz";
+        int index = (int) (Math.random() * alphabet.length());
+        return String.valueOf(alphabet.charAt(index));
     }
 
 }
