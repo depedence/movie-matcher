@@ -11,12 +11,11 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class MovieDto {
-    private Long id;
+    private String imdbId;
     private String title;
     private Integer releaseYear;
     private String description;
     private List<Genre> genres;
     private String posterUrl;
     private Double rating;
-    private String tmdbId;
 }

@@ -26,4 +26,13 @@ public class OmdbClient {
         return restTemplate.getForObject(requestUrl, String.class);
     }
 
+    public String getMovieById(String imdbId) {
+        String requestUrl = String.format(
+                "%s/?apikey=%s&i=%s&plot=full",
+                url, apiKey, imdbId
+        );
+
+        return restTemplate.getForObject(requestUrl, String.class);
+    }
+
 }

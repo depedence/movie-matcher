@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Movie Matcher</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <div id="loading">Загрузка...</div>
+        <div id="movie-card" style="display: none;">
+            <img id="poster" src="" alt="Poster">
+            <h2 id="title"></h2>
+            <p id="year"></p>
+            <p id="description"></p>
+            <p id="rating"></p>
+        </div>
+        <div id="controls" style="display: none;">
+            <button id="next-btn">Следующий фильм</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>

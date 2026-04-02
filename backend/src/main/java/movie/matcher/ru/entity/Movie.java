@@ -24,7 +24,8 @@ public class Movie {
     @Column(name = "release_year", nullable = false)
     private Integer releaseYear;
 
-    @Column(length = 2000)
+    @Lob
+    @Column(length = 200000)
     private String description;
 
     @ElementCollection(targetClass = Genre.class)
@@ -38,7 +39,7 @@ public class Movie {
 
     private Double rating;
 
-    @Column(name = "tmdb_id")
-    private String tmdbId;
+    @Column(name = "imdb_id", unique = true)
+    private String imdbId;
 
 }

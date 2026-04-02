@@ -3,9 +3,7 @@ package movie.matcher.ru.controller;
 import lombok.RequiredArgsConstructor;
 import movie.matcher.ru.entity.dto.MovieDto;
 import movie.matcher.ru.service.MovieService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -17,8 +15,8 @@ public class MovieRestController {
     private final MovieService movieService;
 
     @GetMapping("/feed")
-    public List<MovieDto> getFeed() {
-        return movieService.getFeed();
+    public List<MovieDto> getFeed(@RequestParam Long userId) {
+        return movieService.getFeed(userId);
     }
 
 }
