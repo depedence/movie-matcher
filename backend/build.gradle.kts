@@ -28,6 +28,9 @@ dependencies {
     // Selenide
     testImplementation("com.codeborne:selenide:7.14.0")
 
+    // Rest Assured
+    testImplementation("io.rest-assured:rest-assured:5.5.6")
+
     // Allure
     testImplementation("io.qameta.allure:allure-selenide:2.33.0")
     testImplementation("io.qameta.allure:allure-junit5:2.33.0")
