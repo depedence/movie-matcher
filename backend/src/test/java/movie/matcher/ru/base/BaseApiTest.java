@@ -25,11 +25,7 @@ public abstract class BaseApiTest {
 
     protected static RequestSpecification requestSpec;
     protected static ResponseSpecification responseSpec;
-
-    @Autowired
-    private TestEntity
-    // TODO: реализовать очистку БД после каждого теста
-
+    
     @BeforeEach
     public void setUpRestAssured() {
         RestAssured.port = port;
@@ -50,7 +46,7 @@ public abstract class BaseApiTest {
 
     @AfterEach
     public void cleanDatabase() {
-
+        // TODO: реализовать очистку БД после каждого теста
     }
 
 }
