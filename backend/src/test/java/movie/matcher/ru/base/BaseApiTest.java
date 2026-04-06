@@ -3,32 +3,32 @@ package movie.matcher.ru.base;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.builder.ResponseSpecBuilder;
+import io.restassured.config.RestAssuredConfig;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import org.junit.jupiter.api.AfterEach;
+import movie.matcher.ru.config.TestConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("tests")
+@Import(TestConfig.class)
 public abstract class BaseApiTest {
 
     @LocalServerPort
     protected int port;
 
-    protected static RequestSpecification requestSpec;
-    protected static ResponseSpecification responseSpec;
-
     @Autowired
-    private TestEntity
-    // TODO: реализовать очистку БД после каждого теста
+    private RestAssuredConfig restAssuredConfig;
+
+    protected RequestSpecification requestSpec;
+    protected ResponseSpecification responseSpec;
 
     @BeforeEach
     public void setUpRestAssured() {
@@ -37,6 +37,7 @@ public abstract class BaseApiTest {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
 
         requestSpec = new RequestSpecBuilder()
+                .setConfig(restAssuredConfig)
                 .setContentType(ContentType.JSON)
                 .setAccept(ContentType.JSON)
                 .log(LogDetail.URI)
@@ -46,11 +47,6 @@ public abstract class BaseApiTest {
         responseSpec = new ResponseSpecBuilder()
                 .expectContentType(ContentType.JSON)
                 .build();
-    }
-
-    @AfterEach
-    public void cleanDatabase() {
-
     }
 
 }

@@ -29,7 +29,12 @@ dependencies {
     testImplementation("com.codeborne:selenide:7.14.0")
 
     // Rest Assured
-    testImplementation("io.rest-assured:rest-assured:5.5.6")
+    testImplementation("io.rest-assured:rest-assured:6.0.0")
+    testImplementation("io.rest-assured:json-schema-validator:6.0.0")
+
+    // Jackson
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.2")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.15.2")
 
     // Allure
     testImplementation("io.qameta.allure:allure-selenide:2.33.0")
@@ -51,12 +56,4 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
-
-    maxParallelForks = Runtime.getRuntime().availableProcessors()
-
-    testLogging {
-        events("failed")
-        showStandardStreams = false
-        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.SHORT
-    }
 }

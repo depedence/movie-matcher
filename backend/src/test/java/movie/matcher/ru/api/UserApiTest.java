@@ -1,39 +1,59 @@
 package movie.matcher.ru.api;
 
-import io.restassured.response.Response;
 import movie.matcher.ru.base.BaseApiTest;
-import movie.matcher.ru.repository.UserRepository;
+import movie.matcher.ru.fixture.UserFixture;
+import movie.matcher.ru.helpers.DatabaseCleaner;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class UserApiTest extends BaseApiTest {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserFixture userFixture;
 
-    String username = "testRA";
+    @Autowired
+    private DatabaseCleaner databaseCleaner;
+
+    @BeforeEach
+    void cleanDb() {
+        databaseCleaner.clean();
+    }
 
     @Test
-    void createUser__Success() {
-        Response response = given().spec(requestSpec)
-                .body("""
-                        {
-                            "username": "%s"
-                        }
-                        """.formatted(username))
+    void createUser__success() {
+        given(requestSpec)
+                .body(userFixture.buildUserBody("bank"))
                 .when().post("/api/users")
-                .then().statusCode(200)
-                .body("id", notNullValue())
-                .body("username", equalTo(username))
-                .extract().response();
+                .then().spec(responseSpec)
+                .statusCode(200)
+                .body("username", equalTo("bank"));
+    }
 
-        Long userId = response.jsonPath().getLong("id");
-        assertTrue(userRepository.existsById(userId), "User should exist in database");
+    @Test
+    void editUser__success() {
+        long id = userFixture.createUser(requestSpec, "bank").jsonPath().getLong("id");
+
+        given(requestSpec)
+                .pathParam("id", id)
+                .body(userFixture.buildUserBody("bank_edit"))
+                .when().put("/api/users/{id}")
+                .then().spec(responseSpec)
+                .statusCode(200)
+                .body("username", equalTo("bank_edit"));
+    }
+
+    @Test
+    void deleteUser__success() {
+        long id = userFixture.createUser(requestSpec, "bank").jsonPath().getLong("id");
+
+        given(requestSpec)
+                .pathParam("id", id)
+                .when().delete("/api/users/{id}")
+                .then().statusCode(200);
     }
 
 }
