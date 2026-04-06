@@ -23,6 +23,8 @@ public class UserApiTest extends BaseApiTest {
         databaseCleaner.clean();
     }
 
+    // TODO: add full CRUD methods
+
     @Test
     void createUser__success() {
         given(requestSpec)
