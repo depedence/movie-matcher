@@ -13,7 +13,7 @@ import static io.restassured.RestAssured.given;
 @Component
 public class UserFixture {
 
-    public Map<String, Object> buildUserBody(String username) {
+    public Map<String, Object> buildUserBody(Object username) {
         Map<String, Object> body = new HashMap<>();
         body.put("username", username);
         return body;

@@ -1,5 +1,6 @@
 package movie.matcher.ru.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import movie.matcher.ru.entity.dto.UserDto;
 import movie.matcher.ru.entity.request.UserRequest;
@@ -16,7 +17,7 @@ public class UserRestController {
     private final UserService userService;
 
     @PostMapping
-    public UserDto createUser(@RequestBody UserRequest request) {
+    public UserDto createUser(@RequestBody @Valid UserRequest request) {
         return userService.createUser(request);
     }
 
@@ -26,7 +27,7 @@ public class UserRestController {
     }
 
     @PutMapping("/{id}")
-    public UserDto editUser(@PathVariable Long id, @RequestBody UserRequest request) {
+    public UserDto editUser(@PathVariable Long id, @RequestBody @Valid UserRequest request) {
         return userService.editUser(request, id);
     }
 
