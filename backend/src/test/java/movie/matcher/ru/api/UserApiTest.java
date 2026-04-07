@@ -14,6 +14,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class UserApiTest extends BaseApiTest {
 
+    // TODO: написать новые тесты под новую авторизацию
+
     @Autowired
     private UserFixture userFixture;
 
