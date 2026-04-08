@@ -11,28 +11,33 @@ import java.util.Map;
 import static io.restassured.RestAssured.given;
 
 @Component
-public class UserFixture {
+public class AuthFixture {
 
-    public Map<String, Object> buildCreateUserRequest(Object username, Object password) {
-        Map<String, Object> body = new HashMap<>();
+    public Map<String, String> buildAuthRequest(String username, String password) {
+        Map<String, String> body = new HashMap<>();
         body.put("username", username);
         body.put("password", password);
         return body;
     }
 
-    public Map<String, Object> buildEditUserRequest(Object username) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("username", username);
-        return body;
-    }
-
     public ExtractableResponse<Response> createUser(RequestSpecification requestSpec, String username, String password) {
         return given(requestSpec)
-                .body(buildCreateUserRequest(username, password))
-                .when().post("/api/users")
+                .body(buildAuthRequest(username, password))
+                .when().post("/api/auth/register")
                 .then()
                 .statusCode(200)
                 .extract();
+    }
+
+    public String login(RequestSpecification requestSpec, String username, String password) {
+        createUser(requestSpec, username, password);
+
+        return given(requestSpec)
+                .body(buildAuthRequest(username, password))
+                .when().post("/api/auth/login")
+                .then()
+                .statusCode(200)
+                .extract().path("token");
     }
 
 }

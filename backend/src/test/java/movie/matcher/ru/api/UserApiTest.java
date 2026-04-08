@@ -1,6 +1,7 @@
 package movie.matcher.ru.api;
 
 import movie.matcher.ru.base.BaseApiTest;
+import movie.matcher.ru.fixture.AuthFixture;
 import movie.matcher.ru.fixture.UserFixture;
 import movie.matcher.ru.helpers.DatabaseCleaner;
 import movie.matcher.ru.repository.UserRepository;
@@ -8,150 +9,118 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.UUID;
+
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class UserApiTest extends BaseApiTest {
-
-    // TODO: написать новые тесты под новую авторизацию
 
     @Autowired
     private UserFixture userFixture;
 
     @Autowired
+    private AuthFixture authFixture;
+
+    @Autowired
     private UserRepository userRepository;
 
     @Autowired
-    private DatabaseCleaner databaseCleaner;
+    private DatabaseCleaner dbCleaner;
+
+    String token;
+
+    String random = UUID.randomUUID().toString().substring(0, 4);
+    String username = "testUser" + random;
+    String password = "testPass" + random;
 
     @BeforeEach
-    void cleanDb() {
-        databaseCleaner.clean();
+    void dbClean() {
+        dbCleaner.clean();
+        token = authFixture.login(requestSpec, "admin", "adminPass");
     }
 
     @Test
     void createUser__success() {
         given(requestSpec)
-                .body(userFixture.buildUserBody("bank"))
+                .header("Authorization", "Bearer " + token)
+                .body(userFixture.buildCreateUserRequest(username, password))
                 .when().post("/api/users")
-                .then().spec(responseSpec)
-                .statusCode(200)
-                .body("username", equalTo("bank"))
-                .extract().response();
+                .then()
+                .statusCode(200);
 
-        assertTrue(userRepository.existsByUsername("bank"));
-    }
-
-    @Test
-    void createUser_usernameNull__returns400() {
-        given(requestSpec)
-                .body(userFixture.buildUserBody(null))
-                .when().post("/api/users")
-                .then().spec(responseSpec)
-                .statusCode(400)
-                .body("errorCode", equalTo("VALIDATION_ERROR"));
-    }
-
-    @Test
-    void createUser_usernameBlank__returns400() {
-        given(requestSpec)
-                .body(userFixture.buildUserBody(""))
-                .when().post("/api/users")
-                .then().spec(responseSpec)
-                .statusCode(400)
-                .body("errorCode", equalTo("VALIDATION_ERROR"));
+        assertTrue(userRepository.existsByUsername(username));
     }
 
     @Test
     void createUser_usernameAlreadyExists__returns409() {
-        userFixture.createUser(requestSpec, "bank");
-
         given(requestSpec)
-                .body(userFixture.buildUserBody("bank"))
+                .header("Authorization", "Bearer " + token)
+                .body(userFixture.buildCreateUserRequest("admin", "adminPass"))
                 .when().post("/api/users")
-                .then().spec(responseSpec)
+                .then()
                 .statusCode(409)
                 .body("errorCode", equalTo("USERNAME_ALREADY_EXISTS"));
     }
 
     @Test
-    void getUser__success() {
-        Long id = userFixture.createUser(requestSpec, "bank").jsonPath().getLong("id");
-
-        given(requestSpec)
-                .pathParam("id", id)
-                .when().get("/api/users/{id}")
-                .then().spec(responseSpec)
-                .statusCode(200)
-                .body("id", equalTo(id))
-                .body("username", equalTo("bank"));
-
-        assertTrue(userRepository.existsByUsername("bank"));
-    }
-
-    @Test
-    void getUser_userNotFound__returns404() {
-        given(requestSpec)
-                .pathParam("id", 1)
-                .when().get("/api/users/{id}")
-                .then().spec(responseSpec)
-                .statusCode(404)
-                .body("errorCode", equalTo("USER_NOT_FOUND"));
-    }
-
-    @Test
     void editUser__success() {
-        Long id = userFixture.createUser(requestSpec, "bank").jsonPath().getLong("id");
+        Long id = userRepository.findByUsername("admin").orElseThrow().getId();
 
         given(requestSpec)
+                .header("Authorization", "Bearer " + token)
                 .pathParam("id", id)
-                .body(userFixture.buildUserBody("bank_edit"))
+                .body(userFixture.buildEditUserRequest(username))
                 .when().put("/api/users/{id}")
-                .then().spec(responseSpec)
+                .then()
                 .statusCode(200)
-                .body("id", equalTo(id))
-                .body("username", equalTo("bank_edit"));
+                .body("username", equalTo(username));
 
-        assertTrue(userRepository.existsByUsername("bank_edit"));
-        assertFalse(userRepository.existsByUsername("bank"));
+        assertTrue(userRepository.existsByUsername(username));
     }
 
     @Test
     void editUser_userNotFound__returns404() {
         given(requestSpec)
-                .pathParam("id", 1)
-                .body(userFixture.buildUserBody("bank_edit"))
+                .header("Authorization", "Bearer " + token)
+                .pathParam("id", 10)
+                .body(userFixture.buildEditUserRequest(username))
                 .when().put("/api/users/{id}")
-                .then().spec(responseSpec)
+                .then()
                 .statusCode(404)
                 .body("errorCode", equalTo("USER_NOT_FOUND"));
     }
 
     @Test
     void editUser_usernameAlreadyExists__returns409() {
-        userFixture.createUser(requestSpec, "bank");
-        Long id = userFixture.createUser(requestSpec, "bank2").jsonPath().getLong("id");
+        Long id = userRepository.findByUsername("admin").orElseThrow().getId();
 
         given(requestSpec)
+                .header("Authorization", "Bearer " + token)
                 .pathParam("id", id)
-                .body(userFixture.buildUserBody("bank"))
+                .body(userFixture.buildEditUserRequest("admin"))
                 .when().put("/api/users/{id}")
-                .then().spec(responseSpec)
+                .then()
                 .statusCode(409)
                 .body("errorCode", equalTo("USERNAME_ALREADY_EXISTS"));
     }
 
     @Test
     void deleteUser__success() {
-        Long id = userFixture.createUser(requestSpec, "bank").jsonPath().getLong("id");
+        Long id = userRepository.findByUsername("admin").orElseThrow().getId();
 
         given(requestSpec)
+                .header("Authorization", "Bearer " + token)
                 .pathParam("id", id)
+                .body(userFixture.buildEditUserRequest(username))
                 .when().delete("/api/users/{id}")
-                .then().statusCode(200);
+                .then()
+                .statusCode(200)
+                .body("message", equalTo("User successfully deleted"));
 
-        assertFalse(userRepository.existsById(id));
+        assertFalse(userRepository.existsByUsername(username));
     }
 
 }

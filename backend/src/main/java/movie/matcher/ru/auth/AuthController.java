@@ -3,7 +3,6 @@ package movie.matcher.ru.auth;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import movie.matcher.ru.entity.request.AuthRequest;
-import movie.matcher.ru.entity.response.MessageResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,13 +17,15 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody @Valid AuthRequest request) {
-        return ResponseEntity.ok(authService.register(request));
+    public ResponseEntity<AuthResponse> register(@RequestBody @Valid AuthRequest request) {
+        String token = authService.register(request);
+        return ResponseEntity.ok(new AuthResponse(token));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody @Valid AuthRequest request) {
-        return ResponseEntity.ok(authService.login(request));
+    public ResponseEntity<AuthResponse> login(@RequestBody @Valid AuthRequest request) {
+        String token = authService.login(request);
+        return ResponseEntity.ok(new AuthResponse(token));
     }
 
 }
