@@ -12,6 +12,8 @@ import movie.matcher.ru.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -35,6 +37,12 @@ public class UserService {
         User user = repository.findById(id)
                 .orElseThrow(() -> new BusinessException(ExceptionType.USER_NOT_FOUND, "id: " + id));
         return userMapper.toDto(user);
+    }
+
+    public List<UserDto> getAllUsers() {
+        return repository.findAll().stream()
+                .map(userMapper::toDto)
+                .toList();
     }
 
     public UserDto editUser(EditUserRequest request, Long id) {

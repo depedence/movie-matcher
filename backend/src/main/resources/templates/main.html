@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Main page</title>
+  <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
+<body>
+  <header>
+    <nav>
+      <button class="tab-btn active" data-tab="users">Users</button>
+    </nav>
+    <button id="logout-btn">Logout</button>
+  </header>
+
+  <main>
+    <section id="tab-users" class="tab-content active">
+      <div class="toolbar">
+        <button id="create-user-btn">+ Add user</button>
+        <button id="refresh-btn">↻ Refresh</button>
+      </div>
+
+      <table id="users-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+  </main>
+
+  <div id="modal-delete" class="modal hidden">
+    <div class="modal-box">
+      <p>Are u sure you want to delete this user?</p>
+      <div class="modal-actions">
+        <button id="confirm-delete-btn">Delete</button>
+        <button id="cancel-delete-btn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-edit" class="modal hidden">
+    <div class="modal-box">
+      <h3>Edit user</h3>
+      <label for="edit-username">Username</label>
+      <input id="edit-username" type="text" placeholder="New username">
+      <div class="modal-actions">
+        <button id="confirm-edit-btn">Save</button>
+        <button id="cancel-edit-btn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-create" class="modal hidden">
+    <div class="modal-box">
+      <h3>Add user</h3>
+      <label for="create-username">Username</label>
+      <input id="create-username" type="text" placeholder="Username">
+      <label for="create-password">Password</label>
+      <input id="create-password" type="password" placeholder="Password">
+      <div class="modal-actions">
+        <button id="confirm-create-btn">Create</button>
+        <button id="cancel-create-btn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script th:src="@{/js/main.js}"></script>
+</body>
+</html>
