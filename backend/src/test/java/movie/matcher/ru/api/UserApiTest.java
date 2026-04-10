@@ -18,6 +18,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class UserApiTest extends BaseApiTest {
 
+    // TODO: вынести given() в отдельный Client .java class
+    // header вставить в requestSpec
+
+    
     @Autowired
     private UserFixture userFixture;
 
