@@ -38,6 +38,8 @@ public class AuthFixture {
                 .then()
                 .statusCode(200)
                 .extract().path("token");
+
+        // ToDo: отсюда вытащить логин и засунуть его в requestSpec в baseApiTest
     }
 
 }

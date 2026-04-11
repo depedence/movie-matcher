@@ -34,12 +34,6 @@ public class UserApiTest extends BaseApiTest {
     @Autowired
     private DatabaseCleaner dbCleaner;
 
-    String token;
-
-    String random = UUID.randomUUID().toString().substring(0, 4);
-    String username = "testUser" + random;
-    String password = "testPass" + random;
-
     @BeforeEach
     void dbClean() {
         dbCleaner.clean();

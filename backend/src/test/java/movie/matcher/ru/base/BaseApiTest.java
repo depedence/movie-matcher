@@ -39,6 +39,7 @@ public abstract class BaseApiTest {
         requestSpec = new RequestSpecBuilder()
                 .setConfig(restAssuredConfig)
                 .setContentType(ContentType.JSON)
+                .addHeader("Authorization", "Bearer ")
                 .setAccept(ContentType.JSON)
                 .log(LogDetail.URI)
                 .log(LogDetail.METHOD)
