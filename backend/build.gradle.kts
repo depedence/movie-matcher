@@ -63,6 +63,9 @@ dependencies {
     // MapStruct
     implementation("org.mapstruct:mapstruct:1.5.5.Final")
     annotationProcessor("org.mapstruct:mapstruct-processor:1.5.5.Final")
+
+    // Faker
+    testImplementation("net.datafaker:datafaker:2.0.0")
 }
 
 tasks.test {
