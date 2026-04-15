@@ -7,7 +7,9 @@ import io.restassured.filter.log.LogDetail;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
+import movie.matcher.ru.data.DatabaseCleaner;
 import org.junit.jupiter.api.BeforeEach;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
@@ -20,7 +22,11 @@ public abstract class BaseApiTest {
     protected int port;
 
     protected RequestSpecification requestSpec;
+    protected RequestSpecification authSpec;
     protected ResponseSpecification responseSpec;
+
+    @Autowired
+    protected DatabaseCleaner databaseCleaner;
 
     @BeforeEach
     void setUpRestAssured() {
@@ -39,5 +45,4 @@ public abstract class BaseApiTest {
                 .expectContentType(ContentType.JSON)
                 .build();
     }
-
 }

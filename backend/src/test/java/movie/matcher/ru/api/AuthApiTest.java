@@ -2,26 +2,21 @@ package movie.matcher.ru.api;
 
 import movie.matcher.ru.base.BaseApiTest;
 import movie.matcher.ru.client.AuthClient;
-import movie.matcher.ru.data.DatabaseCleaner;
 import movie.matcher.ru.data.UserDataFactory;
 import movie.matcher.ru.models.request.AuthModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class AuthApiTest extends BaseApiTest {
 
     private AuthClient client;
     private AuthModel body;
 
-    @Autowired
-    private DatabaseCleaner databaseCleaner;
-
     @BeforeEach
     void setUp() {
         databaseCleaner.cleanDb();
         client = new AuthClient(requestSpec);
-        body = UserDataFactory.randomUser();
+        body = UserDataFactory.randomAuthUser();
     }
 
     // -- Register -----
@@ -68,7 +63,7 @@ public class AuthApiTest extends BaseApiTest {
     // -- Helpers ------
 
     private void registerBeforeTest() {
-        body = UserDataFactory.randomUser();
+        body = UserDataFactory.randomAuthUser();
         client.register(body)
                 .then()
                 .statusCode(200);
