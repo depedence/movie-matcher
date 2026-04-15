@@ -36,4 +36,17 @@ public class AuthClient {
                 .extract().response();
     }
 
+    public Response loginInvalidCredentials() {
+        return given().spec(requestSpec)
+                .body("""
+                        {
+                            "username": "invalidUser",
+                            "password": "invalidPass"
+                        }
+                        """)
+                .when().post("/api/auth/login")
+                .then()
+                .extract().response();
+    }
+
 }
