@@ -85,4 +85,6 @@ public class UserApiTest extends AuthBaseTest {
                 .statusCode(200);
     }
 
+    // TODO: add full editUser suite and add deleteUser suite(negative+positive)
+
 }
