@@ -1,7 +1,8 @@
 package movie.matcher.ru.data;
 
 import movie.matcher.ru.models.request.AuthModel;
-import movie.matcher.ru.models.request.UserModel;
+import movie.matcher.ru.models.request.CreateUserModel;
+import movie.matcher.ru.models.request.EditUserModel;
 import net.datafaker.Faker;
 
 public class UserDataFactory {
@@ -15,10 +16,16 @@ public class UserDataFactory {
                 .build();
     }
 
-    public static UserModel randomUser() {
-        return UserModel.builder()
+    public static CreateUserModel randomUser() {
+        return CreateUserModel.builder()
                 .username(faker.name().username())
                 .password(faker.internet().password())
+                .build();
+    }
+
+    public static EditUserModel randomUsername() {
+        return EditUserModel.builder()
+                .username(faker.name().username())
                 .build();
     }
 }
