@@ -19,4 +19,8 @@ public class LoginUiTest extends BaseUiTest {
                 .pageIsLoaded();
     }
 
+    // TODO: add all suites (negative + positive)
+    // after this rework MainPage
+    // and create full suite MainUiTest
+
 }
