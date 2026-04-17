@@ -1,5 +1,7 @@
 package movie.matcher.ru.page;
 
+import com.codeborne.selenide.Condition;
+
 public class LoginPage extends BasePage {
 
     public LoginPage open() {
@@ -20,6 +22,18 @@ public class LoginPage extends BasePage {
     public MainPage clickLoginBtn() {
         $("#login-btn").click();
         return new MainPage();
+    }
+
+    public LoginPage clickLoginBtnExpectError() {
+        $("#login-btn").click();
+        return this;
+    }
+
+    public LoginPage errorBannerIsVisible(String expectedMessage) {
+        $("#error-banner")
+                .shouldBe(Condition.visible)
+                .should(Condition.text(expectedMessage));
+        return this;
     }
 
 }

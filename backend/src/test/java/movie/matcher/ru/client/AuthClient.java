@@ -2,6 +2,7 @@ package movie.matcher.ru.client;
 
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import movie.matcher.ru.models.request.AuthModel;
 
