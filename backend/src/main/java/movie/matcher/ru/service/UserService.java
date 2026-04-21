@@ -9,10 +9,12 @@ import movie.matcher.ru.exception.BusinessException;
 import movie.matcher.ru.exception.ExceptionType;
 import movie.matcher.ru.mapper.UserMapper;
 import movie.matcher.ru.repository.UserRepository;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -46,6 +48,9 @@ public class UserService {
     }
 
     public UserDto editUser(EditUserRequest request, Long id) {
+        if (getCurrentUserId().equals(id)) {
+            throw new BusinessException(ExceptionType.ACCESS_DENIED);
+        }
         User user = repository.findById(id)
                 .orElseThrow(() -> new BusinessException(ExceptionType.USER_NOT_FOUND, "id: " + id));
         if (repository.existsByUsername(request.getUsername())) {
@@ -57,7 +62,20 @@ public class UserService {
     }
 
     public void deleteUser(Long id) {
+        if (getCurrentUserId().equals(id)) {
+            throw new BusinessException(ExceptionType.ACCESS_DENIED);
+        }
         repository.deleteById(id);
     }
 
+    private Long getCurrentUserId() {
+        String username = Objects.requireNonNull(
+                SecurityContextHolder
+                        .getContext()
+                        .getAuthentication())
+                .getName();
+        return repository.findByUsername(username)
+                .orElseThrow(() -> new BusinessException(ExceptionType.USER_NOT_FOUND, username))
+                .getId();
+    }
 }
