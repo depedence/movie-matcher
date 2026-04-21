@@ -1,6 +1,6 @@
 package movie.matcher.ru.ui;
 
-import movie.matcher.ru.base.BaseUiTest;
+import movie.matcher.ru.base.BaseUiTestNoAuth;
 import movie.matcher.ru.data.UserDataFactory;
 import movie.matcher.ru.models.request.AuthModel;
 import movie.matcher.ru.models.request.CreateUserModel;
@@ -8,7 +8,7 @@ import movie.matcher.ru.page.LoginPage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class LoginUiTest extends BaseUiTest {
+public class LoginUiTest extends BaseUiTestNoAuth {
 
     private CreateUserModel user;
     private AuthModel authUser;
@@ -16,7 +16,7 @@ public class LoginUiTest extends BaseUiTest {
     @BeforeEach
     void setupTest() {
         user = UserDataFactory.randomUser();
-        authUser = authHelper.registerAndLogin();
+        authUser = uiAuthHelper.registerAndLogin();
     }
 
     @Test

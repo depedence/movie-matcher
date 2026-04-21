@@ -49,5 +49,4 @@ public class AuthClient {
                 .then()
                 .extract().response();
     }
-
 }

@@ -49,5 +49,4 @@ public class UserClient {
                 .then()
                 .extract().response();
     }
-
 }
