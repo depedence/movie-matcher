@@ -2,13 +2,19 @@ package movie.matcher.ru.base;
 
 import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.Selenide;
+import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.http.ContentType;
+import io.restassured.specification.RequestSpecification;
+import movie.matcher.ru.helper.UiAuthHelper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("tests")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public abstract class BaseUiTest {
 
@@ -16,6 +22,8 @@ public abstract class BaseUiTest {
     protected int port;
 
     protected String baseUrl;
+    protected RequestSpecification requestSpec;
+    protected UiAuthHelper authHelper;
 
     @BeforeAll
     void setupAll() {
@@ -25,6 +33,13 @@ public abstract class BaseUiTest {
         Configuration.headless = false;
         Configuration.timeout = 10_000;
         Configuration.baseUrl = baseUrl;
+
+        requestSpec = new RequestSpecBuilder()
+                .setBaseUri(baseUrl)
+                .setContentType(ContentType.JSON)
+                .build();
+
+        authHelper = new UiAuthHelper(requestSpec);
     }
 
     @AfterEach
