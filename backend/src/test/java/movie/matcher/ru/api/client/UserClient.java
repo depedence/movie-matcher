@@ -1,4 +1,4 @@
-package movie.matcher.ru.client;
+package movie.matcher.ru.api.client;
 
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;

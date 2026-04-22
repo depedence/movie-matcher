@@ -1,10 +1,10 @@
-package movie.matcher.ru.api;
+package movie.matcher.ru.api.tests;
 
 import io.restassured.response.Response;
 import jakarta.transaction.Transactional;
-import movie.matcher.ru.base.AuthBaseTest;
-import movie.matcher.ru.client.UserClient;
-import movie.matcher.ru.data.UserDataFactory;
+import movie.matcher.ru.infra.api.AuthorizedApiTestBase;
+import movie.matcher.ru.api.client.UserClient;
+import movie.matcher.ru.support.data.UserDataFactory;
 import movie.matcher.ru.models.request.CreateUserModel;
 import movie.matcher.ru.models.request.EditUserModel;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +14,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
 @Transactional
-public class UserApiTest extends AuthBaseTest {
+public class UserApiTest extends AuthorizedApiTestBase {
 
     private UserClient client;
     private CreateUserModel createUserModel;

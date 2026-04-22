@@ -1,4 +1,4 @@
-package movie.matcher.ru.base;
+package movie.matcher.ru.infra.api;
 
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
@@ -7,7 +7,7 @@ import io.restassured.filter.log.LogDetail;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
-import movie.matcher.ru.data.DatabaseCleaner;
+import movie.matcher.ru.infra.db.DatabaseCleaner;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -1,15 +1,13 @@
-package movie.matcher.ru.base;
+package movie.matcher.ru.infra.ui;
 
 import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.Selenide;
-import com.codeborne.selenide.WebDriverRunner;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
-import movie.matcher.ru.helper.UiAuthHelper;
+import movie.matcher.ru.support.auth.UiAuthHelper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -18,7 +16,7 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("tests")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public abstract class BaseUiTest {
+public class BaseUiTestNoAuth {
 
     @LocalServerPort
     protected int port;
@@ -42,18 +40,6 @@ public abstract class BaseUiTest {
                 .build();
 
         uiAuthHelper = new UiAuthHelper(requestSpec);
-    }
-
-    @BeforeEach
-    void setupSession() {
-        Selenide.open("/login");
-
-        WebDriverRunner.getWebDriver().manage().deleteAllCookies();
-        Selenide.localStorage().clear();
-
-        String token = uiAuthHelper.registerAndGetToken();
-        Selenide.localStorage().setItem("token", token);
-        Selenide.refresh();
     }
 
     @AfterEach

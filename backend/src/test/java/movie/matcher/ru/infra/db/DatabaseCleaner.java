@@ -1,4 +1,4 @@
-package movie.matcher.ru.data;
+package movie.matcher.ru.infra.db;
 
 import lombok.AllArgsConstructor;
 import movie.matcher.ru.repository.UserRepository;
@@ -8,10 +8,9 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 public class DatabaseCleaner {
 
-    protected UserRepository userRepository;
+    private UserRepository userRepository;
 
     public void cleanDb() {
         userRepository.deleteAll();
     }
-
 }

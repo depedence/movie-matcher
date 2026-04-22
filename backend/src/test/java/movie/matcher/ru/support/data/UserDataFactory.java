@@ -1,4 +1,4 @@
-package movie.matcher.ru.data;
+package movie.matcher.ru.support.data;
 
 import movie.matcher.ru.models.request.AuthModel;
 import movie.matcher.ru.models.request.CreateUserModel;
@@ -11,21 +11,29 @@ public class UserDataFactory {
 
     public static AuthModel randomAuthUser() {
         return AuthModel.builder()
-                .username(faker.name().username())
-                .password(faker.internet().password())
+                .username(generateUsername())
+                .password(generatePassword())
                 .build();
     }
 
     public static CreateUserModel randomUser() {
         return CreateUserModel.builder()
-                .username(faker.name().username())
-                .password(faker.internet().password())
+                .username(generateUsername())
+                .password(generatePassword())
                 .build();
     }
 
     public static EditUserModel randomUsername() {
         return EditUserModel.builder()
-                .username(faker.name().username())
+                .username(generateUsername())
                 .build();
+    }
+
+    private static String generateUsername() {
+        return faker.name().username();
+    }
+
+    private static String generatePassword() {
+        return faker.internet().password();
     }
 }

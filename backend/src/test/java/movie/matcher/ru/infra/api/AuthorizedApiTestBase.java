@@ -1,13 +1,13 @@
-package movie.matcher.ru.base;
+package movie.matcher.ru.infra.api;
 
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.response.Response;
-import movie.matcher.ru.client.AuthClient;
-import movie.matcher.ru.data.UserDataFactory;
+import movie.matcher.ru.api.client.AuthClient;
+import movie.matcher.ru.support.data.UserDataFactory;
 import movie.matcher.ru.models.request.AuthModel;
 import org.junit.jupiter.api.BeforeEach;
 
-public abstract class AuthBaseTest extends BaseApiTest {
+public abstract class AuthorizedApiTestBase extends BaseApiTest {
 
     protected AuthClient authClient;
     protected AuthModel activeUser;

@@ -1,11 +1,10 @@
-package movie.matcher.ru.helper;
+package movie.matcher.ru.support.auth;
 
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-import movie.matcher.ru.client.AuthClient;
-import movie.matcher.ru.data.UserDataFactory;
+import movie.matcher.ru.api.client.AuthClient;
+import movie.matcher.ru.support.data.UserDataFactory;
 import movie.matcher.ru.models.request.AuthModel;
-import movie.matcher.ru.models.request.CreateUserModel;
 
 public class UiAuthHelper {
 
@@ -15,7 +14,7 @@ public class UiAuthHelper {
         this.authClient = new AuthClient(requestSpec);
     }
 
-    public AuthModel registerAndLogin() {
+    public AuthModel registerAndGetUser() {
         AuthModel user = UserDataFactory.randomAuthUser();
         authClient.register(user);
         return user;

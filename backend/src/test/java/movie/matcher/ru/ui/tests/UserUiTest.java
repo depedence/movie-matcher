@@ -1,13 +1,13 @@
-package movie.matcher.ru.ui;
+package movie.matcher.ru.ui.tests;
 
 import com.codeborne.selenide.Selenide;
-import movie.matcher.ru.base.BaseUiTest;
-import movie.matcher.ru.client.UserClient;
-import movie.matcher.ru.data.UserDataFactory;
-import movie.matcher.ru.fixture.UserFixture;
+import movie.matcher.ru.infra.ui.BaseUiTest;
+import movie.matcher.ru.api.client.UserClient;
+import movie.matcher.ru.support.data.UserDataFactory;
+import movie.matcher.ru.support.setup.UserFixture;
 import movie.matcher.ru.models.request.AuthModel;
 import movie.matcher.ru.models.request.CreateUserModel;
-import movie.matcher.ru.page.MainPage;
+import movie.matcher.ru.ui.page.MainPage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -19,7 +19,7 @@ public class UserUiTest extends BaseUiTest {
     @BeforeEach
     void setup() {
         user = UserDataFactory.randomUser();
-        userFixture = new UserFixture(uiAuthHelper, new UserClient(requestSpec));
+        userFixture = new UserFixture(new UserClient(requestSpec));
     }
 
     @Test
@@ -34,7 +34,7 @@ public class UserUiTest extends BaseUiTest {
 
     @Test
     void userCanEditTestUser() {
-        String token = userFixture.getToken();
+        String token = uiAuthHelper.registerAndGetToken();
         AuthModel user = userFixture.createTestUser();
         Selenide.open("/login");
         Selenide.localStorage().setItem("token", token);

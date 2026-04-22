@@ -1,8 +1,8 @@
-package movie.matcher.ru.api;
+package movie.matcher.ru.api.tests;
 
-import movie.matcher.ru.base.BaseApiTest;
-import movie.matcher.ru.client.AuthClient;
-import movie.matcher.ru.data.UserDataFactory;
+import movie.matcher.ru.infra.api.BaseApiTest;
+import movie.matcher.ru.api.client.AuthClient;
+import movie.matcher.ru.support.data.UserDataFactory;
 import movie.matcher.ru.models.request.AuthModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

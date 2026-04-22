@@ -1,4 +1,4 @@
-package movie.matcher.ru.page;
+package movie.matcher.ru.ui.page;
 
 import com.codeborne.selenide.Condition;
 
