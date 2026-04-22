@@ -1,17 +1,24 @@
 package movie.matcher.ru.ui.tests;
 
-import com.codeborne.selenide.Selenide;
 import movie.matcher.ru.infra.ui.BaseUiTest;
-import movie.matcher.ru.api.client.UserClient;
-import movie.matcher.ru.support.data.UserDataFactory;
-import movie.matcher.ru.support.setup.UserFixture;
 import movie.matcher.ru.models.request.AuthModel;
 import movie.matcher.ru.models.request.CreateUserModel;
+import movie.matcher.ru.repository.UserRepository;
+import movie.matcher.ru.support.data.UserDataFactory;
+import movie.matcher.ru.support.setup.UserFixture;
 import movie.matcher.ru.ui.page.MainPage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class UserUiTest extends BaseUiTest {
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     private CreateUserModel user;
     private UserFixture userFixture;
@@ -19,7 +26,7 @@ public class UserUiTest extends BaseUiTest {
     @BeforeEach
     void setup() {
         user = UserDataFactory.randomUser();
-        userFixture = new UserFixture(new UserClient(requestSpec));
+        userFixture = new UserFixture(userRepository, passwordEncoder);
     }
 
     @Test
@@ -28,22 +35,31 @@ public class UserUiTest extends BaseUiTest {
                 .open()
                 .pageIsLoaded()
                 .createUser(user.getUsername(), user.getPassword())
-                .successMsgIsVisible()
+                .successMsgIsVisible("User created")
                 .shouldHaveUserInTable(user.getUsername());
     }
 
     @Test
     void userCanEditTestUser() {
-        String token = uiAuthHelper.registerAndGetToken();
-        AuthModel user = userFixture.createTestUser();
-        Selenide.open("/login");
-        Selenide.localStorage().setItem("token", token);
+        AuthModel testUser = userFixture.createTestUser();
 
         new MainPage()
                 .open()
-                // BUG: он создал, но не нашел
+                .pageIsLoaded()
+                .editUser(testUser.getUsername(), user.getUsername())
+                .successMsgIsVisible("User updated")
                 .shouldHaveUserInTable(user.getUsername());
+    }
 
-        Selenide.sleep(10000);
+    @Test
+    void userCanDeleteTestUser() {
+        AuthModel testUser = userFixture.createTestUser();
+
+        new MainPage()
+                .open()
+                .pageIsLoaded()
+                .deleteUser(testUser.getUsername())
+                .successMsgIsVisible("User deleted")
+                .shouldNotHaveUserInTable(testUser.getUsername());
     }
 }

@@ -17,7 +17,6 @@ public class MainPage extends BasePage {
     public MainPage createUser(String username, String password) {
         $("#create-user-btn").click();
 
-        $("#create-username").shouldBe(Condition.visible);
         $("#create-username").setValue(username);
         $("#create-password").setValue(password);
 
@@ -25,10 +24,26 @@ public class MainPage extends BasePage {
         return this;
     }
 
-    public MainPage successMsgIsVisible() {
+    public MainPage editUser(String oldUsername, String newUsername) {
+        $$("tr").findBy(Condition.text(oldUsername)).$(".btn-edit").click();
+
+        $("#edit-username").setValue(newUsername);
+
+        $("#confirm-edit-btn").click();
+        return this;
+    }
+
+    public MainPage deleteUser(String username) {
+        $$("tr").findBy(Condition.text(username)).$(".btn-delete").click();
+
+        $("#confirm-delete-btn").click();
+        return this;
+    }
+
+    public MainPage successMsgIsVisible(String msgText) {
         $(".toast")
                 .shouldBe(Condition.visible)
-                .shouldHave(Condition.text("User created"));
+                .shouldHave(Condition.text(msgText));
         return this;
     }
 
@@ -36,6 +51,13 @@ public class MainPage extends BasePage {
         $$("#users-table tbody tr")
                 .findBy(Condition.text(username))
                 .shouldBe(Condition.visible);
+        return this;
+    }
+
+    public MainPage shouldNotHaveUserInTable(String username) {
+        $$("#users-table tbody tr")
+                .findBy(Condition.text(username))
+                .shouldNotBe(Condition.visible);
         return this;
     }
 }
