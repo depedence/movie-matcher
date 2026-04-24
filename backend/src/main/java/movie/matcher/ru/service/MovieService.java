@@ -1,5 +1,6 @@
 package movie.matcher.ru.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import movie.matcher.ru.entity.Genre;
 import movie.matcher.ru.entity.Movie;
@@ -35,6 +36,16 @@ public class MovieService {
         } else {
             return preferenceFeed(likes, seenMovies);
         }
+    }
+
+    public List<Movie> getAllMovies() {
+        return movieRepository.findAll();
+    }
+
+    @Transactional
+    public void deleteAllMovies() {
+        movieRepository.deleteAllGenres();
+        movieRepository.deleteAll();
     }
 
     private List<MovieDto> randomFeed(Set<String> seenMovies) {

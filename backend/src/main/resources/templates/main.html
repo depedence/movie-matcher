@@ -9,6 +9,7 @@
   <header>
     <nav>
       <button class="tab-btn active" data-tab="users">Users</button>
+      <button class="tab-btn" data-tab="movies">Movies</button>
     </nav>
     <button id="logout-btn">Logout</button>
   </header>
@@ -31,13 +32,35 @@
         <tbody></tbody>
       </table>
     </section>
+
+    <section id="tab-movies" class="tab-content">
+      <div class="toolbar">
+        <button id="feed-btn">Feed</button>
+        <button id="movies-refresh-btn">↻ Refresh</button>
+        <button id="movies-delete-all-btn">Delete All</button>
+      </div>
+
+      <table id="movies-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Year</th>
+            <th>Rating</th>
+            <th>Genres</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
   </main>
 
   <div id="modal-delete" class="modal hidden">
     <div class="modal-box">
-      <p>Are u sure you want to delete this user?</p>
+      <h3 id="delete-modal-title">Delete item</h3>
+      <p id="delete-modal-text">Are you sure you want to delete this item?</p>
       <div class="modal-actions">
-        <button id="confirm-delete-btn">Delete</button>
+        <button id="confirm-delete-btn">Confirm</button>
         <button id="cancel-delete-btn">Cancel</button>
       </div>
     </div>
@@ -65,6 +88,56 @@
       <div class="modal-actions">
         <button id="confirm-create-btn">Create</button>
         <button id="cancel-create-btn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-movie-details" class="modal hidden">
+    <div class="modal-box modal-box-large">
+      <div class="movie-modal-header">
+        <div>
+          <p class="movie-modal-kicker">Movie details</p>
+          <h3 id="movie-modal-title">Movie</h3>
+        </div>
+        <button id="close-movie-modal-btn" class="icon-btn" type="button">Close</button>
+      </div>
+
+      <div class="movie-modal-content">
+        <div class="movie-poster-wrap">
+          <img id="movie-modal-poster" class="movie-poster" alt="Movie poster">
+          <div id="movie-modal-poster-fallback" class="movie-poster-fallback hidden">No poster</div>
+        </div>
+
+        <div class="movie-meta">
+          <div class="movie-meta-grid">
+            <div class="movie-meta-item">
+              <span class="movie-meta-label">ID</span>
+              <span id="movie-modal-id" class="movie-meta-value">-</span>
+            </div>
+            <div class="movie-meta-item">
+              <span class="movie-meta-label">IMDb</span>
+              <span id="movie-modal-imdb" class="movie-meta-value">-</span>
+            </div>
+            <div class="movie-meta-item">
+              <span class="movie-meta-label">Year</span>
+              <span id="movie-modal-year" class="movie-meta-value">-</span>
+            </div>
+            <div class="movie-meta-item">
+              <span class="movie-meta-label">Rating</span>
+              <span id="movie-modal-rating" class="movie-meta-value">-</span>
+            </div>
+          </div>
+
+          <div class="movie-meta-item">
+            <span class="movie-meta-label">Genres</span>
+            <div id="movie-modal-genres" class="movie-tags"></div>
+          </div>
+
+          <div class="movie-meta-item">
+            <span class="movie-meta-label">Description</span>
+            <p id="movie-modal-description" class="movie-description">-</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
