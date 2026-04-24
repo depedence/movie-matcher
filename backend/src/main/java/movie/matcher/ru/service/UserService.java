@@ -3,6 +3,7 @@ package movie.matcher.ru.service;
 import lombok.RequiredArgsConstructor;
 import movie.matcher.ru.entity.User;
 import movie.matcher.ru.entity.dto.UserDto;
+import movie.matcher.ru.entity.enums.UserRole;
 import movie.matcher.ru.entity.request.CreateUserRequest;
 import movie.matcher.ru.entity.request.EditUserRequest;
 import movie.matcher.ru.exception.BusinessException;
@@ -31,6 +32,7 @@ public class UserService {
         User user = new User();
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setRole(UserRole.DEFAULT);
         repository.save(user);
         return userMapper.toDto(user);
     }

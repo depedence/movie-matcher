@@ -1,7 +1,7 @@
 package movie.matcher.ru.entity.request;
 
 import lombok.Data;
-import movie.matcher.ru.entity.SwipeType;
+import movie.matcher.ru.entity.enums.SwipeType;
 
 @Data
 public class SwipeRequest {

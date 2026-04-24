@@ -11,9 +11,19 @@ public class PageController {
         return "login";
     }
 
-    @GetMapping("/main")
-    public String mainPage() {
+    @GetMapping("/admin")
+    public String adminPage() {
         return "main";
+    }
+
+    @GetMapping("/main")
+    public String legacyAdminPage() {
+        return "redirect:/admin";
+    }
+
+    @GetMapping("/home")
+    public String homePage() {
+        return "home";
     }
 
 }

@@ -1,9 +1,9 @@
 package movie.matcher.ru.auth;
 
 import lombok.RequiredArgsConstructor;
-import movie.matcher.ru.repository.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -29,9 +29,13 @@ public class SecurityConfig {
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/login", "/register", "/main").permitAll()
+                        .requestMatchers("/login", "/register", "/admin", "/main", "/home").permitAll()
                         .requestMatchers("/css/**", "/js/**", "/templates/**").permitAll()
-                        .anyRequest().authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/movies/**").hasAnyRole("DEFAULT", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/swipes").hasAnyRole("DEFAULT", "ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/swipes/user/**").hasAnyRole("DEFAULT", "ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/users/{id}").hasAnyRole("DEFAULT", "ADMIN")
+                        .anyRequest().hasRole("ADMIN")
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

@@ -5,6 +5,30 @@ const errorBanner = document.getElementById('error-banner')
 const usernameError = document.getElementById('username-error')
 const passwordError = document.getElementById('password-error')
 
+function decodeTokenPayload(jwtToken) {
+    if (!jwtToken) {
+        return null
+    }
+
+    const parts = jwtToken.split('.')
+    if (parts.length < 2) {
+        return null
+    }
+
+    try {
+        const base64 = parts[1].replaceAll('-', '+').replaceAll('_', '/')
+        const normalized = base64.padEnd(Math.ceil(base64.length / 4) * 4, '=')
+        return JSON.parse(atob(normalized))
+    } catch (error) {
+        return null
+    }
+}
+
+function resolveRedirectUrl(token) {
+    const role = decodeTokenPayload(token)?.role
+    return role === 'ADMIN' ? '/admin' : '/home'
+}
+
 function clearErrors() {
     errorBanner.classList.remove('visible')
     errorBanner.textContent = ''
@@ -68,7 +92,7 @@ loginBtn.addEventListener('click', async () => {
             const data = await response.json()
             localStorage.setItem('token', data.token)
             await new Promise(resolve => setTimeout(resolve, 100))
-            window.location.href = '/main'
+            window.location.href = resolveRedirectUrl(data.token)
         } else {
             const errorData = await response.json()
             errorBanner.textContent = errorData.message || 'Something went wrong'

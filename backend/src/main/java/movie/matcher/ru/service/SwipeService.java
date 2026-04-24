@@ -2,7 +2,7 @@ package movie.matcher.ru.service;
 
 import lombok.RequiredArgsConstructor;
 import movie.matcher.ru.entity.MovieSwipe;
-import movie.matcher.ru.entity.SwipeType;
+import movie.matcher.ru.entity.enums.SwipeType;
 import movie.matcher.ru.entity.request.SwipeRequest;
 import movie.matcher.ru.repository.MovieSwipeRepository;
 import org.springframework.stereotype.Service;

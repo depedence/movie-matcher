@@ -1,4 +1,4 @@
-package movie.matcher.ru.entity;
+package movie.matcher.ru.entity.enums;
 
 public enum SwipeType {
 

@@ -6,6 +6,27 @@ const state = {
     pendingDeleteAction: null
 }
 
+function ensureAdminPageAccess() {
+    if (!token) {
+        window.location.href = '/login'
+        return false
+    }
+
+    const payload = decodeTokenPayload(token)
+    if (!payload?.sub) {
+        localStorage.removeItem('token')
+        window.location.href = '/login'
+        return false
+    }
+
+    if (payload.role !== 'ADMIN') {
+        window.location.href = '/home'
+        return false
+    }
+
+    return true
+}
+
 // API
 async function apiRequest(url, method = 'GET', body = null) {
     const options = {
@@ -430,6 +451,8 @@ document.getElementById('refresh-btn').addEventListener('click', () => {
 })
 
 // INIT
-loadUsers().catch(() => {
-    showToast('Error loading users', 'error')
-})
+if (ensureAdminPageAccess()) {
+    loadUsers().catch(() => {
+        showToast('Error loading users', 'error')
+    })
+}

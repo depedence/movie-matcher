@@ -1,7 +1,7 @@
 package movie.matcher.ru.repository;
 
 import movie.matcher.ru.entity.MovieSwipe;
-import movie.matcher.ru.entity.SwipeType;
+import movie.matcher.ru.entity.enums.SwipeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

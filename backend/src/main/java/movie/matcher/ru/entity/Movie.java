@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import movie.matcher.ru.entity.enums.Genre;
 
 import java.util.List;
 

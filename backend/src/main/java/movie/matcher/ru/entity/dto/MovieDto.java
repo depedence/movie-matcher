@@ -3,7 +3,7 @@ package movie.matcher.ru.entity.dto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import movie.matcher.ru.entity.Genre;
+import movie.matcher.ru.entity.enums.Genre;
 
 import java.util.List;
 

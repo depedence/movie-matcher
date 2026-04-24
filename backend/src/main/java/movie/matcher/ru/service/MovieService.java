@@ -2,10 +2,10 @@ package movie.matcher.ru.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import movie.matcher.ru.entity.Genre;
+import movie.matcher.ru.entity.enums.Genre;
 import movie.matcher.ru.entity.Movie;
 import movie.matcher.ru.entity.MovieSwipe;
-import movie.matcher.ru.entity.SwipeType;
+import movie.matcher.ru.entity.enums.SwipeType;
 import movie.matcher.ru.entity.dto.MovieDto;
 import movie.matcher.ru.mapper.MovieMapper;
 import movie.matcher.ru.omdb.OmdbClient;

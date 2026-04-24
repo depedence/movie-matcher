@@ -2,6 +2,7 @@ package movie.matcher.ru.auth;
 
 import lombok.RequiredArgsConstructor;
 import movie.matcher.ru.entity.User;
+import movie.matcher.ru.entity.enums.UserRole;
 import movie.matcher.ru.entity.request.AuthRequest;
 import movie.matcher.ru.exception.BusinessException;
 import movie.matcher.ru.exception.ExceptionType;
@@ -28,6 +29,7 @@ public class AuthService {
         User user = new User();
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setRole(UserRole.DEFAULT);
         userRepository.save(user);
         return jwtService.generateToken(user);
     }
