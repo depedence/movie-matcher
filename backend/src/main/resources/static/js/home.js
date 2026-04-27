@@ -1,5 +1,12 @@
 const token = localStorage.getItem('token')
 
+const state = {
+    currentMovie: null,
+    recentLikes: [],
+    isAnimating: false,
+    toastTimerId: null
+}
+
 function decodeTokenPayload(jwtToken) {
     if (!jwtToken) {
         return null
@@ -33,13 +40,20 @@ function formatGenres(genres) {
     return genres
 }
 
-async function apiRequest(url, method = 'GET') {
-    return fetch(url, {
+async function apiRequest(url, method = 'GET', body = null) {
+    const options = {
         method,
         headers: {
             'Authorization': `Bearer ${token}`
         }
-    })
+    }
+
+    if (body) {
+        options.headers['Content-Type'] = 'application/json'
+        options.body = JSON.stringify(body)
+    }
+
+    return fetch(url, options)
 }
 
 function ensureAuthorizedUserPage() {
@@ -63,12 +77,17 @@ function ensureAuthorizedUserPage() {
     return true
 }
 
-async function fetchMovies() {
-    const response = await apiRequest('/api/movies')
-    if (!response.ok) {
-        throw new Error('Failed to load movies')
-    }
-    return await response.json()
+function showToast(message, type = 'success') {
+    const toast = document.getElementById('toast')
+    clearTimeout(state.toastTimerId)
+
+    toast.textContent = message
+    toast.className = `toast ${type}`
+    toast.classList.remove('hidden')
+
+    state.toastTimerId = window.setTimeout(() => {
+        toast.classList.add('hidden')
+    }, 2600)
 }
 
 function setPoster(imageEl, fallbackEl, posterUrl, altText) {
@@ -105,28 +124,12 @@ function renderTags(container, genres, emptyLabel = 'No genres') {
     })
 }
 
-function renderFeaturedMovie(movie) {
-    const featuredCard = document.getElementById('featured-movie')
-    featuredCard.classList.remove('hidden')
-
-    document.getElementById('featured-title').textContent = formatValue(movie.title)
-    document.getElementById('featured-description').textContent = formatValue(movie.description, 'No description')
-    document.getElementById('featured-year').textContent = formatValue(movie.releaseYear)
-    document.getElementById('featured-rating').textContent = formatValue(movie.rating)
-    document.getElementById('featured-imdb').textContent = formatValue(movie.imdbId)
-
-    renderTags(document.getElementById('featured-genres'), movie.genres)
-    setPoster(
-        document.getElementById('featured-poster'),
-        document.getElementById('featured-poster-fallback'),
-        movie.posterUrl,
-        `${formatValue(movie.title)} poster`
-    )
-}
-
 function openMovieModal(movie) {
+    if (!movie) {
+        return
+    }
+
     document.getElementById('movie-modal-title').textContent = formatValue(movie.title)
-    document.getElementById('movie-modal-id').textContent = formatValue(movie.id)
     document.getElementById('movie-modal-imdb').textContent = formatValue(movie.imdbId)
     document.getElementById('movie-modal-year').textContent = formatValue(movie.releaseYear)
     document.getElementById('movie-modal-rating').textContent = formatValue(movie.rating)
@@ -143,69 +146,199 @@ function openMovieModal(movie) {
     document.getElementById('movie-modal').classList.remove('hidden')
 }
 
-function renderMovies(movies) {
-    const grid = document.getElementById('movies-grid')
-    grid.innerHTML = ''
-
-    movies.forEach(movie => {
-        const card = document.createElement('article')
-        card.className = 'movie-card'
-        card.innerHTML = `
-            <div class="movie-card-poster-wrap">
-                <img class="movie-card-poster hidden" alt="${formatValue(movie.title)} poster">
-                <div class="movie-card-poster-fallback">No poster</div>
-            </div>
-            <div class="movie-card-body">
-                <div class="movie-card-head">
-                    <h3>${formatValue(movie.title)}</h3>
-                    <span class="movie-rating">${formatValue(movie.rating)}</span>
-                </div>
-                <p class="movie-year">${formatValue(movie.releaseYear)}</p>
-                <p class="movie-description-preview">${formatValue(movie.description, 'No description')}</p>
-                <div class="tag-list card-tags"></div>
-            </div>
-        `
-
-        const poster = card.querySelector('.movie-card-poster')
-        const fallback = card.querySelector('.movie-card-poster-fallback')
-        setPoster(poster, fallback, movie.posterUrl, `${formatValue(movie.title)} poster`)
-        renderTags(card.querySelector('.card-tags'), movie.genres)
-
-        card.addEventListener('click', () => openMovieModal(movie))
-        grid.appendChild(card)
-    })
+function setFeedStatus(label) {
+    document.getElementById('feed-status-pill').textContent = label
 }
 
-function setViewState({ loading = false, empty = false, error = false, hasGrid = false }) {
+function setInteractionEnabled(enabled) {
+    document.getElementById('skip-movie-btn').disabled = !enabled
+    document.getElementById('like-movie-btn').disabled = !enabled
+    document.getElementById('details-movie-btn').disabled = !enabled
+}
+
+function setViewState({ loading = false, empty = false, error = false, hasMovie = false }) {
     document.getElementById('home-loading').classList.toggle('hidden', !loading)
     document.getElementById('home-empty').classList.toggle('hidden', !empty)
     document.getElementById('home-error').classList.toggle('hidden', !error)
-    document.getElementById('movies-grid').classList.toggle('hidden', !hasGrid)
-    document.getElementById('featured-movie').classList.toggle('hidden', !hasGrid)
+    document.getElementById('swipe-stage').classList.toggle('hidden', !hasMovie)
+}
+
+function renderCurrentMovie(movie) {
+    state.currentMovie = movie
+
+    if (!movie) {
+        setViewState({ empty: true })
+        setFeedStatus('No movies')
+        return
+    }
+
+    setViewState({ hasMovie: true })
+    setFeedStatus('Fresh pick')
+
+    const card = document.getElementById('current-movie-card')
+    card.classList.remove('swipe-left', 'swipe-right')
+    void card.offsetWidth
+
+    document.getElementById('current-movie-title').textContent = formatValue(movie.title)
+    document.getElementById('current-movie-rating').textContent = formatValue(movie.rating)
+    document.getElementById('current-movie-year').textContent = formatValue(movie.releaseYear)
+    document.getElementById('current-movie-imdb').textContent = formatValue(movie.imdbId)
+    document.getElementById('current-movie-description').textContent = formatValue(movie.description, 'No description')
+
+    renderTags(document.getElementById('current-movie-genres'), movie.genres)
+    setPoster(
+        document.getElementById('current-movie-poster'),
+        document.getElementById('current-movie-poster-fallback'),
+        movie.posterUrl,
+        `${formatValue(movie.title)} poster`
+    )
+}
+
+function createLikedMovieCard(movie) {
+    const card = document.createElement('article')
+    card.className = 'liked-movie-card'
+    card.innerHTML = `
+        <div class="liked-movie-media">
+            <img class="liked-movie-poster hidden" alt="${formatValue(movie.title)} poster">
+            <div class="liked-movie-fallback hidden">No poster</div>
+        </div>
+        <div class="liked-movie-body">
+            <div class="liked-movie-head">
+                <h3>${formatValue(movie.title)}</h3>
+                <span class="movie-rating">${formatValue(movie.rating)}</span>
+            </div>
+            <p class="liked-movie-year">${formatValue(movie.releaseYear)}</p>
+            <p class="liked-movie-description">${formatValue(movie.description, 'No description')}</p>
+            <div class="tag-list liked-tags"></div>
+        </div>
+    `
+
+    setPoster(
+        card.querySelector('.liked-movie-poster'),
+        card.querySelector('.liked-movie-fallback'),
+        movie.posterUrl,
+        `${formatValue(movie.title)} poster`
+    )
+    renderTags(card.querySelector('.liked-tags'), movie.genres)
+    card.addEventListener('click', () => openMovieModal(movie))
+    return card
+}
+
+function renderRecentLikes(movies) {
+    state.recentLikes = Array.isArray(movies) ? movies : []
+
+    const grid = document.getElementById('liked-movies-grid')
+    const empty = document.getElementById('likes-empty')
+    const likesCount = document.getElementById('likes-count')
+
+    likesCount.textContent = `${state.recentLikes.length} / 10`
+    grid.innerHTML = ''
+
+    if (state.recentLikes.length === 0) {
+        empty.classList.remove('hidden')
+        grid.classList.add('hidden')
+        return
+    }
+
+    empty.classList.add('hidden')
+    grid.classList.remove('hidden')
+    state.recentLikes.forEach(movie => {
+        grid.appendChild(createLikedMovieCard(movie))
+    })
+}
+
+async function fetchFeed() {
+    const response = await apiRequest('/api/feed/me')
+    if (!response.ok) {
+        throw new Error('Failed to load feed')
+    }
+    return response.json()
+}
+
+async function sendSwipe(imdbId, swipeType) {
+    const response = await apiRequest('/api/feed/me/swipe', 'POST', { imdbId, swipeType })
+    if (!response.ok) {
+        throw new Error('Failed to submit swipe')
+    }
+    return response.json()
 }
 
 async function loadHomePage() {
+    document.getElementById('home-refresh-btn').disabled = true
+    setInteractionEnabled(false)
     setViewState({ loading: true })
+    setFeedStatus('Loading')
 
     try {
-        const movies = await fetchMovies()
-        document.getElementById('movies-count').textContent = `${movies.length} movie${movies.length === 1 ? '' : 's'}`
-
-        if (movies.length === 0) {
-            setViewState({ empty: true })
-            return
+        const payload = await fetchFeed()
+        renderCurrentMovie(payload.currentMovie)
+        renderRecentLikes(payload.recentLikes)
+        if (payload.currentMovie) {
+            setInteractionEnabled(true)
         }
-
-        renderFeaturedMovie(movies[0])
-        renderMovies(movies)
-        setViewState({ hasGrid: true })
+        return true
     } catch (error) {
         setViewState({ error: true })
+        setFeedStatus('Unavailable')
+        showToast('Failed to load feed', 'error')
+        return false
+    } finally {
+        document.getElementById('home-refresh-btn').disabled = false
     }
 }
 
+async function handleSwipe(direction) {
+    if (state.isAnimating || !state.currentMovie) {
+        return
+    }
+
+    state.isAnimating = true
+    setInteractionEnabled(false)
+    setFeedStatus(direction === 'LIKE' ? 'Saving like' : 'Skipping')
+
+    const movie = state.currentMovie
+    const card = document.getElementById('current-movie-card')
+    card.classList.add(direction === 'LIKE' ? 'swipe-right' : 'swipe-left')
+
+    try {
+        await new Promise(resolve => window.setTimeout(resolve, 320))
+        const payload = await sendSwipe(movie.imdbId, direction)
+        renderCurrentMovie(payload.currentMovie)
+        renderRecentLikes(payload.recentLikes)
+        showToast(direction === 'LIKE' ? 'Movie added to likes' : 'Movie skipped')
+
+        if (payload.currentMovie) {
+            setInteractionEnabled(true)
+        }
+    } catch (error) {
+        card.classList.remove('swipe-left', 'swipe-right')
+        renderCurrentMovie(movie)
+        renderRecentLikes(state.recentLikes)
+        setInteractionEnabled(true)
+        setFeedStatus('Retry needed')
+        showToast('Failed to update swipe', 'error')
+    } finally {
+        state.isAnimating = false
+    }
+}
+
+document.getElementById('skip-movie-btn').addEventListener('click', async () => {
+    await handleSwipe('SKIP')
+})
+
+document.getElementById('like-movie-btn').addEventListener('click', async () => {
+    await handleSwipe('LIKE')
+})
+
+document.getElementById('details-movie-btn').addEventListener('click', () => {
+    openMovieModal(state.currentMovie)
+})
+
 document.getElementById('home-refresh-btn').addEventListener('click', async () => {
-    await loadHomePage()
+    const loaded = await loadHomePage()
+    if (loaded) {
+        showToast('Feed refreshed')
+    }
 })
 
 document.getElementById('home-logout-btn').addEventListener('click', () => {
@@ -220,6 +353,27 @@ document.getElementById('close-movie-modal-btn').addEventListener('click', () =>
 document.getElementById('movie-modal').addEventListener('click', event => {
     if (event.target.id === 'movie-modal') {
         document.getElementById('movie-modal').classList.add('hidden')
+    }
+})
+
+document.addEventListener('keydown', async event => {
+    if (document.getElementById('movie-modal').classList.contains('hidden') === false) {
+        if (event.key === 'Escape') {
+            document.getElementById('movie-modal').classList.add('hidden')
+        }
+        return
+    }
+
+    if (!state.currentMovie || state.isAnimating) {
+        return
+    }
+
+    if (event.key === 'ArrowLeft') {
+        await handleSwipe('SKIP')
+    }
+
+    if (event.key === 'ArrowRight') {
+        await handleSwipe('LIKE')
     }
 })
 

@@ -106,7 +106,7 @@ public class MovieService {
             if (searchResults.isArray()) {
                 for (JsonNode node : searchResults) {
 
-                    if (feed.size() >= 10) {
+                    if (feed.size() >= 5) {
                         break;
                     }
 
@@ -114,7 +114,13 @@ public class MovieService {
                     if (seenMovies.contains(imdbId)) {
                         continue;
                     }
-                    String detailJson = omdbClient.getMovieById(imdbId);
+                    String detailJson;
+                    try {
+                        detailJson = omdbClient.getMovieById(imdbId);
+                    } catch (Exception e) {
+                        System.out.println("OMDB timeout or error for imdb: " + imdbId);
+                        continue;
+                    }
                     JsonNode details = objectMapper.readTree(detailJson);
 
                     if (!"True".equals(details.path("Response").asString())) {
@@ -185,7 +191,7 @@ public class MovieService {
             JsonNode searchResults = root.path("Search");
 
             for (JsonNode node : searchResults) {
-                if (feed.size() >= 10) {
+                if (feed.size() >= 5) {
                     break;
                 }
 
@@ -193,8 +199,14 @@ public class MovieService {
                 if (seenMovies.contains(imdbId)) {
                     continue;
                 }
-                String detailsJson = omdbClient.getMovieById(imdbId);
-                JsonNode details = objectMapper.readTree(detailsJson);
+                String detailJson;
+                try {
+                    detailJson = omdbClient.getMovieById(imdbId);
+                } catch (Exception e) {
+                    System.out.println("OMDB timeout or error for imdb: " + imdbId);
+                    continue;
+                }
+                JsonNode details = objectMapper.readTree(detailJson);
 
                 if (!"True".equals(details.path("Response").asString())) {
                     continue;

@@ -2,6 +2,7 @@ package movie.matcher.ru.omdb;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -15,7 +16,7 @@ public class OmdbClient {
     @Value("${omdb.url}")
     private String url;
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate = buildRestTemplate();
 
     public String searchMovies(String keyword, int page) {
         String requestUrl = String.format(
@@ -35,4 +36,10 @@ public class OmdbClient {
         return restTemplate.getForObject(requestUrl, String.class);
     }
 
+    private RestTemplate buildRestTemplate() {
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(3000);
+        factory.setReadTimeout(5000);
+        return new RestTemplate(factory);
+    }
 }

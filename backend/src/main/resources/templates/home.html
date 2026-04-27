@@ -11,63 +11,95 @@
     <header class="home-header">
       <div>
         <p class="hero-kicker">Movie Matcher</p>
-        <h1 class="page-title">Movies</h1>
+        <h1 class="page-title">Swipe Your Next Movie</h1>
+        <p class="page-subtitle">Skip what misses. Like what fits. The feed adapts to your taste.</p>
       </div>
 
       <div class="header-actions">
-        <button id="home-refresh-btn" class="secondary-btn" type="button">Refresh</button>
+        <button id="home-refresh-btn" class="ghost-btn" type="button">Refresh feed</button>
         <button id="home-logout-btn" class="ghost-btn" type="button">Logout</button>
       </div>
     </header>
 
     <main class="home-content">
-      <section id="featured-movie" class="featured-card hidden" aria-live="polite">
-        <div class="featured-poster-wrap">
-          <img id="featured-poster" class="featured-poster" alt="Featured movie poster">
-          <div id="featured-poster-fallback" class="featured-poster-fallback hidden">No poster</div>
-        </div>
-
-        <div class="featured-details">
-          <p class="section-label">Featured movie</p>
-          <h2 id="featured-title">Movie title</h2>
-          <p id="featured-description" class="featured-description">Movie description</p>
-
-          <div class="featured-meta">
-            <div class="meta-item">
-              <span class="meta-label">Year</span>
-              <span id="featured-year" class="meta-value">-</span>
+      <section class="swipe-layout">
+        <section class="swipe-panel">
+          <div class="section-head">
+            <div>
+              <p class="section-label">Movie feed</p>
+              <h2>One card at a time</h2>
             </div>
-            <div class="meta-item">
-              <span class="meta-label">Rating</span>
-              <span id="featured-rating" class="meta-value">-</span>
-            </div>
-            <div class="meta-item">
-              <span class="meta-label">IMDb</span>
-              <span id="featured-imdb" class="meta-value">-</span>
-            </div>
+            <div id="feed-status-pill" class="status-pill">Ready</div>
           </div>
 
-          <div id="featured-genres" class="tag-list"></div>
-        </div>
-      </section>
+          <div id="home-loading" class="info-card">Loading your feed...</div>
+          <div id="home-empty" class="info-card hidden">No movies available right now. Refresh the feed in a moment.</div>
+          <div id="home-error" class="info-card error hidden">Failed to load your feed.</div>
 
-      <section class="catalog-section">
-        <div class="section-head">
-          <div>
-            <p class="section-label">Movie list</p>
-            <h2>All available movies</h2>
+          <div id="swipe-stage" class="swipe-stage hidden">
+            <div class="swipe-stack" aria-hidden="true">
+              <div class="stack-card stack-card-back"></div>
+              <div class="stack-card stack-card-middle"></div>
+            </div>
+
+            <article id="current-movie-card" class="swipe-card" aria-live="polite">
+              <div class="swipe-card-media">
+                <img id="current-movie-poster" class="swipe-card-poster hidden" alt="Movie poster">
+                <div id="current-movie-poster-fallback" class="swipe-card-poster-fallback hidden">No poster</div>
+                <div id="swipe-badge-like" class="swipe-badge like">Liked</div>
+                <div id="swipe-badge-skip" class="swipe-badge skip">Skipped</div>
+              </div>
+
+              <div class="swipe-card-body">
+                <div class="swipe-card-head">
+                  <div>
+                    <p class="section-label">Now showing</p>
+                    <h3 id="current-movie-title">Movie title</h3>
+                  </div>
+                  <span id="current-movie-rating" class="movie-rating">-</span>
+                </div>
+
+                <div class="swipe-meta">
+                  <div class="meta-item">
+                    <span class="meta-label">Year</span>
+                    <span id="current-movie-year" class="meta-value">-</span>
+                  </div>
+                  <div class="meta-item">
+                    <span class="meta-label">IMDb</span>
+                    <span id="current-movie-imdb" class="meta-value">-</span>
+                  </div>
+                </div>
+
+                <p id="current-movie-description" class="swipe-description">Movie description</p>
+                <div id="current-movie-genres" class="tag-list"></div>
+
+                <div class="swipe-actions">
+                  <button id="skip-movie-btn" class="action-btn action-btn-skip" type="button">Skip</button>
+                  <button id="details-movie-btn" class="ghost-btn" type="button">Details</button>
+                  <button id="like-movie-btn" class="action-btn action-btn-like" type="button">Like</button>
+                </div>
+              </div>
+            </article>
           </div>
-          <span id="movies-count" class="movies-count">0 movies</span>
-        </div>
+        </section>
 
-        <div id="home-loading" class="info-card">Loading movies...</div>
-        <div id="home-empty" class="info-card hidden">No movies found yet.</div>
-        <div id="home-error" class="info-card error hidden">Failed to load this section.</div>
+        <aside class="likes-panel">
+          <div class="section-head likes-head">
+            <div>
+              <p class="section-label">Liked movies</p>
+              <h2>Your recent matches</h2>
+            </div>
+            <span id="likes-count" class="movies-count">0 / 10</span>
+          </div>
 
-        <div id="movies-grid" class="movies-grid hidden"></div>
+          <div id="likes-empty" class="info-card subtle">Like a movie and it will appear here instantly.</div>
+          <div id="liked-movies-grid" class="liked-movies-grid hidden"></div>
+        </aside>
       </section>
     </main>
   </div>
+
+  <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
 
   <div id="movie-modal" class="modal hidden">
     <div class="modal-box">
@@ -87,10 +119,6 @@
 
         <div class="modal-meta">
           <div class="modal-grid">
-            <div class="meta-item">
-              <span class="meta-label">ID</span>
-              <span id="movie-modal-id" class="meta-value">-</span>
-            </div>
             <div class="meta-item">
               <span class="meta-label">IMDb</span>
               <span id="movie-modal-imdb" class="meta-value">-</span>

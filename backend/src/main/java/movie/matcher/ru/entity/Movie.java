@@ -25,8 +25,7 @@ public class Movie {
     @Column(name = "release_year", nullable = false)
     private Integer releaseYear;
 
-    @Lob
-    @Column(length = 200000)
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     @ElementCollection(targetClass = Genre.class)
