@@ -70,7 +70,7 @@ public class UserService {
         repository.deleteById(id);
     }
 
-    private Long getCurrentUserId() {
+    public Long getCurrentUserId() {
         String username = Objects.requireNonNull(
                 SecurityContextHolder
                         .getContext()

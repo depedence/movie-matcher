@@ -35,6 +35,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/swipes").hasAnyRole("DEFAULT", "ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/swipes/user/**").hasAnyRole("DEFAULT", "ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/users/{id}").hasAnyRole("DEFAULT", "ADMIN")
+                        .requestMatchers("/api/feed/**").hasAnyRole("DEFAULT", "ADMIN")
                         .anyRequest().hasRole("ADMIN")
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

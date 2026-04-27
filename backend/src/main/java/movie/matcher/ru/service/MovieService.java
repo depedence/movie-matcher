@@ -2,6 +2,7 @@ package movie.matcher.ru.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import movie.matcher.ru.entity.dto.FeedResponse;
 import movie.matcher.ru.entity.enums.Genre;
 import movie.matcher.ru.entity.Movie;
 import movie.matcher.ru.entity.MovieSwipe;
@@ -46,6 +47,45 @@ public class MovieService {
     public void deleteAllMovies() {
         movieRepository.deleteAllGenres();
         movieRepository.deleteAll();
+    }
+
+    public FeedResponse getFeedMe(Long userId) {
+        Set<String> seen = getSeenMovies(userId);
+        List<MovieSwipe> likes = swipeRepository.findByUserIdAndSwipeType(userId, SwipeType.LIKE);
+
+        List<MovieDto> feed = likes.isEmpty() ? randomFeed(seen) : preferenceFeed(likes, seen);
+        MovieDto current = feed.isEmpty() ? null : feed.get(0);
+
+        List<MovieSwipe> recentSwipes = swipeRepository
+                .findTop10ByUserIdAndSwipeTypeOrderByCreatedAtDesc(userId, SwipeType.LIKE);
+
+        List<MovieDto> recentLikes = recentSwipes.stream()
+                .map(s -> movieRepository.findByImdbId(s.getImdbId()).orElse(null))
+                .filter(Objects::nonNull)
+                .map(movieMapper::toDto)
+                .toList();
+
+        return new FeedResponse(current, recentLikes);
+    }
+
+    public FeedResponse swipeAndGetNext(Long userId, String imdbId) {
+        Set<String> seen = getSeenMovies(userId);
+        seen.add(imdbId);
+        List<MovieSwipe> likes = swipeRepository.findByUserIdAndSwipeType(userId, SwipeType.LIKE);
+
+        List<MovieDto> feed = likes.isEmpty() ? randomFeed(seen) : preferenceFeed(likes, seen);
+        MovieDto next = feed.isEmpty() ? null : feed.get(0);
+
+        List<MovieSwipe> recentSwipes = swipeRepository
+                .findTop10ByUserIdAndSwipeTypeOrderByCreatedAtDesc(userId, SwipeType.LIKE);
+
+        List<MovieDto> recentLikes = recentSwipes.stream()
+                .map(s -> movieRepository.findByImdbId(s.getImdbId()).orElse(null))
+                .filter(Objects::nonNull)
+                .map(movieMapper::toDto)
+                .toList();
+
+        return new FeedResponse(next, recentLikes);
     }
 
     private List<MovieDto> randomFeed(Set<String> seenMovies) {

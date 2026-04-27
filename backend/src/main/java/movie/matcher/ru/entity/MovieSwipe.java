@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import movie.matcher.ru.entity.enums.SwipeType;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "movie_swipes")
 @Getter
@@ -26,5 +28,13 @@ public class MovieSwipe {
     @Column(name = "swipe_type", nullable = false)
     @Enumerated(EnumType.STRING)
     private SwipeType swipeType;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 
 }

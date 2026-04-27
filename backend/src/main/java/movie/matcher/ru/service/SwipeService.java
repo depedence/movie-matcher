@@ -35,4 +35,15 @@ public class SwipeService {
         return repository.findByUserIdAndSwipeType(userId, SwipeType.LIKE);
     }
 
+    public void saveSwipeForUser(Long userId, String imdbId, SwipeType swipeType) {
+        MovieSwipe swipe = repository
+            .findByUserIdAndImdbId(userId, imdbId)
+            .orElseGet(MovieSwipe::new);
+
+        swipe.setUserId(userId);
+        swipe.setImdbId(imdbId);
+        swipe.setSwipeType(swipeType);
+
+        repository.save(swipe);
+    }
 }

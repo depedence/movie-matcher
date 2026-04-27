@@ -2,6 +2,8 @@ backend/.gradle
 backend/.idea
 backend/src/main/resources/application.yml
 backend/build
+backend/.vscode
+backend/agents.md
 
 frontend/.idea
 frontend/node_modules

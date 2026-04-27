@@ -13,6 +13,8 @@ public interface MovieSwipeRepository extends JpaRepository<MovieSwipe, Long> {
 
     List<MovieSwipe> findByUserIdAndSwipeType(Long userId, SwipeType swipeType);
 
+    List<MovieSwipe> findTop10ByUserIdAndSwipeTypeOrderByCreatedAtDesc(Long userId, SwipeType swipeType);
+
     Optional<MovieSwipe> findByUserIdAndImdbId(Long userId, String imdbId);
 
 }
